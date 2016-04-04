@@ -78,10 +78,14 @@ var minesweeper = function () {
         } else if (secret == "-1") {
             td.innerText = "";
             td.innerHTML = '<img src="img/bomb.png" class="bomb"/>';
-            //td.className += "mine";
             gameOver();
         } else {
             td.innerText = secret;
+        }
+
+        if(isEverythingOpened(table)){
+            module.gameFinished = true;
+            alert("You WIN!!!");
         }
     }
 
@@ -91,7 +95,27 @@ var minesweeper = function () {
         alert("Game Over!");
     }
 
+    function isEverythingOpened(table) {
+        var cells = table.getElementsByTagName("td");
+        for (var i = 0; i < cells.length; i++) {
+            var td = cells[i];
+            var secret = td.getAttribute("secret");
+            var isMark = td.getAttribute('data-mark') == "true";
+            var isOpen = td.getAttribute('data-opened') == "true";
+            var wrongMine = (isMark && secret != "-1")
+                || (isMark == false && secret == "-1");
+            if((!isOpen && !isMark) || wrongMine){
+                return false;
+            }
+        }
+        return true;
+    }
+
     function markBomb (td) {
+        if (!module.gameStarted) {
+            module.gameStarted = true;
+            clock();
+        }
         if (td.getAttribute("data-opened")== "true") {
             return;
         }
@@ -102,6 +126,10 @@ var minesweeper = function () {
         else {
             td.innerHTML = '<img src="img/flag.png" class="flag"/>';
             td.setAttribute("data-mark", "true");
+        }
+        if(isEverythingOpened(table)){
+            module.gameFinished = true;
+            alert("You WIN!!!");
         }
     }
 
@@ -207,7 +235,7 @@ var minesweeper = function () {
     }
 
     function clock (){
-        if(module.gameStarted) {
+        if(module.gameStarted && !module.gameFinished) {
             document.getElementById("timer").innerText = module.seconds;
             module.seconds++;
             setTimeout(clock, 1000);
