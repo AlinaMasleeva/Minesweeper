@@ -37,7 +37,7 @@ var minesweeper = function () {
                 };
 
                 td.oncontextmenu = function(e) {
-                    markBomb(this);
+                    markBomb(this, table);
                     return false;
                 }
             }
@@ -111,7 +111,7 @@ var minesweeper = function () {
         return true;
     }
 
-    function markBomb (td) {
+    function markBomb (td, table) {
         if (!module.gameStarted) {
             module.gameStarted = true;
             clock();
